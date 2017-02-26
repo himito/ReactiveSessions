@@ -1,0 +1,31 @@
+(*let process main =
+   signal ch1 default 98 gather (fun x y -> x) in
+   signal ch0 default (3,ch1) gather (fun x y -> x) in
+  (emit ch0 (1,ch1);pause);(emit ch1 4;pause) || (await ch0((x,y)) in (await y(z) in print_endline (string_of_int z)))  *)
+
+let process client ch0 choice v1 v2=
+  signal w default 98 gather (fun x y -> x) in  
+  signal ch0_1 default (98, w) gather (fun x y -> x) in 
+  (emit ch0 (choice, ch0_1);pause);
+  signal ch0_2 default 98 gather (fun x y -> x) in  
+  (emit ch0_1 (v1, ch0_2);pause);
+  (emit ch0_2 v2;pause);
+  (await ch0_2(x) in print_endline (string_of_int x))
+
+let rec process mathServer ch0 =
+  (await ch0((l,c1)) in
+  if l="sum" then (await c1((v1,c2)) in (await c2(v2) in (emit c2 (v1+v2);pause) ))
+  else
+    if l="rest" then (await c1((v1,c2)) in (await c2(v2) in (emit c2 (v1-v2);pause) ))
+    else
+      if l="mult" then (await c1((v1,c2)) in (await c2(v2) in (emit c2 (v1*v2);pause) ))
+  ); run (mathServer ch0)
+
+let process main_v3 =
+  signal ch0_2 default 98 gather (fun x y -> x) in
+  signal ch0_1 default (98, ch0_2) gather (fun x y -> x) in
+  signal ch0 default ("", ch0_1) gather (fun x y -> x) in
+  run (client ch0 "mult" 10 12) || run (mathServer ch0) 
+    
+   
+let () = run main_v3 ; print_endline "End of test 4" 

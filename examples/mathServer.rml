@@ -1,0 +1,43 @@
+(*  let process main_v3 =
+  signal ch1 default 100 gather (fun x y -> x) in
+  (emit ch1 10;pause);(emit ch1 18;pause);(await ch1(x) in print_endline (string_of_int x))  || (await ch1(x) in (await ch1(y) in (emit ch1 (x+y);pause))) *)
+
+let process client ch0 ch1 choice v1 v2=
+  (emit ch0 choice;pause);(emit ch1 v1;pause);(emit ch1 v2;pause);(await ch1(x) in print_endline (string_of_int x))
+
+let process client_v2 ch0 ch1 choice v1=
+  (emit ch0 choice;pause);(emit ch1 v1;pause);(await ch1(x) in print_endline (string_of_int x))
+
+let rec process mathServer ch0 ch1 =
+  
+  (await ch0(x) in
+  if x="sum" then (await ch1(x) in (await ch1(y) in (emit ch1 (x+y);pause)))
+  else
+    if x="rest" then (await ch1(x) in (await ch1(y) in (emit ch1 (x-y);pause)))
+    else
+      if x="mult" then (await ch1(x) in (await ch1(y) in (emit ch1 (x*y);pause)))
+      else
+	if x="inc" then (await ch1(x) in (emit ch1 (x+1);pause))
+  ); run (mathServer ch0 ch1)
+
+let process main_v3 =
+  signal ch0 default "" gather (fun x y -> x) in
+  signal ch1 default 100 gather (fun x y -> x) in
+  (*run (client ch0 ch1 "rest" 10 11); run (client ch0 ch1 "sum" 23 7); run (client ch0 ch1 "mult" 10 9) || run (mathServer ch0 ch1) *)
+  (*run (client ch0 ch1 "rest" 10 11) || run (client ch0 ch1 "sum" 23 7) || run (client ch0 ch1 "mult" 10 9) || run (mathServer ch0 ch1)*)  
+  run (client ch0 ch1 "rest" 10 11); run (client ch0 ch1 "sum" 23 7); run (client ch0 ch1 "mult" 10 9); run (client_v2 ch0 ch1 "inc" 10) || run (mathServer ch0 ch1)
+    
+(*let process main_v3 =
+  signal ch0 default "" gather (fun x y -> x) in
+  signal ch1 default 100 gather (fun x y -> x) in
+  (emit ch0 "rest";pause);(emit ch1 10;pause);(emit ch1 18;pause);(await ch1(x) in print_endline (string_of_int x)) ||
+  (await ch0(x) in
+  if x="sum" then (await ch1(x) in (await ch1(y) in (emit ch1 (x+y);pause)))
+  else
+    if x="rest" then (await ch1(x) in (await ch1(y) in (emit ch1 (x-y);pause)))
+  )*)
+
+(*emit ch1 10;signal x in present x else ()  || do () when ch1; let ch1(x) in emit ch2 (x+45);signal x in present x else ()*)   
+(*emit ch1 10;pause;emit ch1 11;pause;   || await ch1(x) in await ch1(y) in emit ch1 (x+y);pause*)
+   
+let () = run main_v3 ; print_endline "End of test 4" 

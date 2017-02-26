@@ -1,0 +1,52 @@
+type operation = Sum | Rest | Mult | Exit
+let process client ch0 (choice:operation) (v1:int) (v2:int)=
+  signal ch0_1, ch0_2 in
+  emit ch0 (choice, ch0_1);pause;
+  emit ch0_1 (v1, ch0_2);pause;
+  emit ch0_2 v2;pause;
+  await one ch0_2 (x) in print_endline (string_of_int x)
+
+let process calculate c1 f =
+  await one c1 ((v1,c2)) in
+    await one c2 (v2) in
+      emit c2 (f v1 v2)
+
+let rec process mathServer ch0 =
+  await one ch0 (choice,c1) in
+    begin
+      match choice with
+      | Sum -> run (calculate c1 ( + ))
+      | Rest -> run (calculate c1 ( - ))
+      | Mult -> run (calculate c1 ( * ))
+      | Exit -> halt
+    end ; run (mathServer ch0)
+
+let process main_v3 =
+  signal ch0 in
+  (do (loop pause end) until ch0(x::xs) -> (print_endline x) done) || (emit ch0 "asd")
+  (*run (mathServer ch0) || run (client ch0 Mult 10 20)*)
+
+let () = run main_v3
+
+(*Reactive Session Types v0.01*)
+exception InvalidEndpoint
+type 'a signalVal =
+    {
+     value: 'a; 
+     parityBit: bool;
+     continuationChannel: 'a;
+    }
+
+
+let compare_and_swap r v w = if !r = v then begin r := w; true end else false
+let fresh u  = (u, ref true)
+let check r = if not (compare_and_swap r true false) then raise InvalidEndpoint
+
+let process send ch v contCh =
+  check contCh ; emit ch (v,contCh);pause
+let process receive ch pCont =
+  await one ch((x,checkBit)) in pCont
+let process select ch l contCh =
+  check contCh ; emit ch (l,contCh);pause
+let process branch ch pCont =
+  await one ch((x,checkBit)) in pCont

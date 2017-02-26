@@ -1,0 +1,45 @@
+(* Exception raised whenever a valid endpoint is garbage collected, meaning
+that it is unused. *)
+exception UnusedValidEndpoint
+
+(* Exception raised whenever an invalid endpoint is used. *)
+exception InvalidEndpoint
+
+(* Message type that indicates the end of a session or of an iteration. *)
+type _0
+
+(* ReactiveML signal *)
+type 'a rml_signal
+
+(* The type of endpoints for receiving messages of type ['a] and sending
+messages of type ['b]. *)
+type ('a, 'b) st
+
+(* The type of endpoints for receiving messages of type ['a]. *)
+type 'a it = ('a, _0) st
+
+(* The type of endpoints for sending messages of type ['a]. *)
+type 'a ot = (_0, 'a) st
+
+(* The type of endpoints that can only be closed. *)
+type et = (_0, _0) st
+
+(** [create ()] creates a new session.
+@return a pair with two valid endpoints and dual types. *)
+val create : unit -> ('a, 'b) st * ('b, 'a) st
+
+(* [close ep] closes endpoint [ep].
+ @raise InvalidEndpoint if the endpoint [ep] is invalid. *)
+val close : et -> unit process
+
+(** [send ep e] sends [e] on the endpoint [ep] with output capability.
+ @return the endpoint [ep].
+ @raise InvalidEndpoint if [ep] is invalid. *)
+val send : ('m * ('a, 'b) st) ot -> 'm -> ('b, 'a) st process
+
+(** [receive ep] receives a message from the endpoint [ep] with input
+capability.
+ @return a pair [(v, ep)] with the received message [v] and the endpoint [ep].
+ @raise InvalidEndpoint if the endpoint [ep] is invalid.
+ *)
+val receive : ('m * ('a, 'b) st) it -> 'm * ('a, 'b) st process

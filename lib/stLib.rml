@@ -1,0 +1,73 @@
+(* ---------------------------------------------------------------- *)
+(*                     Exception Definition                         *)
+(* ---------------------------------------------------------------- *)
+
+exception UnusedValidEndpoint;;
+exception InvalidEndpoint;;
+
+(* ---------------------------------------------------------------- *)
+(*                      Type Definition                             *)
+(* ---------------------------------------------------------------- *)
+
+type _0;;
+type 'a rml_signal = ('a, 'a list) event ;;
+type ('a, 'b) st = unit rml_signal * bool ref;;
+type 'a it = ('a, _0) st;;
+type 'a ot = (_0, 'a) st;;
+type et = (_0, _0) st;;
+
+(* ---------------------------------------------------------------- *)
+(*                      Check Functions                             *)
+(* ---------------------------------------------------------------- *)
+
+let check_valid r = if !r then r := false else raise InvalidEndpoint;;
+let check_invalid (_, r) = if !r then raise UnusedValidEndpoint;;
+let fresh ch =
+  let ep = (ch, ref true) in
+  Gc.finalise check_invalid ep;
+  ep
+;;
+
+(* ---------------------------------------------------------------- *)
+(*                 Initialization  Function                         *)
+(* ---------------------------------------------------------------- *)
+
+let create () =
+  signal ch in
+  (fresh ch, fresh ch)
+;;
+
+(* ---------------------------------------------------------------- *)
+(*                        Close Process                             *)
+(* ---------------------------------------------------------------- *)
+
+let process close (_, r) = check_valid r;;
+
+(* ---------------------------------------------------------------- *)
+(*                         Send Process                             *)
+(* ---------------------------------------------------------------- *)
+
+let process send (ch, r) v =
+  check_valid r;
+  emit ch (Obj.magic v);
+  pause;
+  Obj.magic (fresh ch)  (* Obj.magic unsafely forces a type cast *)
+;;
+
+(* ---------------------------------------------------------------- *)
+(*                      Receive Process                             *)
+(* ---------------------------------------------------------------- *)
+
+let process receive (ch, r) =
+  check_valid r;
+  await one ch (v) in
+  Obj.magic (v, fresh ch)
+;;
+
+(*
+let process receive s cont = await one s (v,(sCont:('m, 'm list) event)) in cont
+
+let process send s v cont = signal sCont in emit s (v, (sCont:('m, 'm list) event));pause; cont
+
+let process select s l cont = send s l cont
+*)

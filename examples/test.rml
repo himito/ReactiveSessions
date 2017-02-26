@@ -1,0 +1,25 @@
+open StLib;;
+
+let process client x =
+  let y = run (send x 10) in
+  let y = run (send y "asd1") in 
+  let y = run (send y "asd2") in
+  y
+;;
+
+let process server x =
+  let v1, y = (run Obj.magic (receive x)) in
+  let v2, y = (run Obj.magic (receive y)) in
+  let y = run (send y "asd1") in 
+  print_int v1;
+  print_endline "";
+  print_endline v2
+;;
+
+
+let process main =
+  let x, y = create () in
+  (run (server x)) || (run (client y)) 
+;;
+
+let () = run main
