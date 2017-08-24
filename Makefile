@@ -1,12 +1,12 @@
 # ReactiveML compiler
-RMLBUILD  := rmlbuild -classic-display
+RMLBUILD := rmlbuild -classic-display
 
 # Flags, Libraries and Includes
-FLAGS     := -Is lib \
-						 -tag annot
+FLAGS := -Is lib \
+		 -tag annot
 
 # Target of the compilation
-TARGET    := native
+TARGET := native
 
 # The directory for binaries
 TARGETDIR := bin
@@ -35,4 +35,4 @@ cleanall: clean
 	@$(RM) -rf $(TARGETDIR)
 
 # Non-file targets
-.PHONY: all clean cleanall directories
+.PHONY: all clean cleanall
