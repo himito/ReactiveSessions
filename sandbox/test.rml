@@ -1,0 +1,12 @@
+let process receive s c =
+    do emit c when s done;
+    await s(x) in ();;
+
+let process send s c =
+    do
+        loop emit s; pause end
+    until c done;;
+
+let main =
+    signal senal, callback, senal2, callback2 in
+    (run (receive senal callback); pause; print_endline("paila con el receiv3"))  ||   (run (send senal callback); run (send senal2 callback2));;
